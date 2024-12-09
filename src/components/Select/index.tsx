@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect, useCallback } from 'react'
+import { useState, useRef, useEffect, useCallback, useMemo } from 'react'
 import { MoreVertical, Search, X, Plus } from 'lucide-react'
 import { Contributor } from '../../utils/data'
 import { CreateModal } from '../ModalCreate'
@@ -25,20 +25,29 @@ export const Select = ({ data, onSelectFilter }: Props) => {
   const inputRef = useRef<HTMLInputElement>(null)
   const dropdownRef = useRef<HTMLUListElement>(null)
 
-  const roles = [...new Set(data.map(item => item.contributorRole))]
-  const allItems = [...data, ...createdItems]
+  const roles = useMemo(() => {
+    return [...new Set(data.map(item => item.contributorRole))]
+  }, [data])
 
-  const filteredItems = allItems.filter(item => {
-    const isNotSelected = !selectedItems.some(
-      selected => selected.contributorId === item.contributorId
-    )
-    const matchesSearch =
-      item.contributorName?.toLowerCase().includes(inputValue.toLowerCase()) ||
-      item.contributorAlias?.toLowerCase().includes(inputValue.toLowerCase())
-    return isNotSelected && matchesSearch
-  })
+  const allItems = useMemo(() => {
+    return [...data, ...createdItems]
+  }, [data, createdItems])
 
-  const handleRemoveItem = (itemToRemove: Contributor) => {
+  const filteredItems = useMemo(() => {
+    return allItems.filter(item => {
+      const isNotSelected = !selectedItems.some(
+        selected => selected.contributorId === item.contributorId
+      )
+      const matchesSearch =
+        item.contributorName
+          ?.toLowerCase()
+          .includes(inputValue.toLowerCase()) ||
+        item.contributorAlias?.toLowerCase().includes(inputValue.toLowerCase())
+      return isNotSelected && matchesSearch
+    })
+  }, [allItems, selectedItems, inputValue])
+
+  const handleRemoveItem = useCallback((itemToRemove: Contributor) => {
     setSelectedItems(prev =>
       prev.filter(item => item.contributorId !== itemToRemove.contributorId)
     )
@@ -54,31 +63,28 @@ export const Select = ({ data, onSelectFilter }: Props) => {
         ]
       }
     })
-  }
+  }, [])
 
   const handleCreateNew = (role: string) => {
     setCreateModal({ isOpen: true, role })
     setIsOpen(false)
   }
 
-  const handleCreateSubmit = ({
-    name,
-    alias
-  }: {
-    name: string
-    alias: string
-  }) => {
-    const newId = Math.max(...allItems.map(item => item.contributorId)) + 1
-    const newContributor: Contributor = {
-      contributorId: newId,
-      contributorName: name,
-      contributorAlias: alias || null,
-      contributorRole: createModal.role as any,
-      contributorAvatarUrl: 'https://via.placeholder.com/150'
-    }
-    setCreatedItems(prev => [...prev, newContributor])
-    setSelectedItems(prev => [...prev, newContributor])
-  }
+  const handleCreateSubmit = useCallback(
+    ({ name, alias }: { name: string; alias: string }) => {
+      const newId = Math.max(...allItems.map(item => item.contributorId)) + 1
+      const newContributor: Contributor = {
+        contributorId: newId,
+        contributorName: name,
+        contributorAlias: alias || null,
+        contributorRole: createModal.role as any,
+        contributorAvatarUrl: 'https://via.placeholder.com/150'
+      }
+      setCreatedItems(prev => [...prev, newContributor])
+      setSelectedItems(prev => [...prev, newContributor])
+    },
+    [allItems, createModal]
+  )
 
   const handleSelectItem = useCallback((item: Contributor) => {
     setSelectedItems(prev => [...prev, item])
@@ -128,7 +134,7 @@ export const Select = ({ data, onSelectFilter }: Props) => {
               <div className="flex items-center justify-between bg-gray-800 rounded-lg p-2 w-[200px]">
                 <div className="flex items-center space-x-3">
                   <div className="rounded-full flex items-center justify-center">
-                    {item.contributorAvatarUrl ? (
+                    {item.contributorAvatarUrl && item.contributorName ? (
                       <img
                         src={item.contributorAvatarUrl}
                         className="rounded-[30px] w-[24px] h-[24px]"
@@ -205,7 +211,7 @@ export const Select = ({ data, onSelectFilter }: Props) => {
               key={item.contributorId}
               onClick={() => handleSelectItem(item)}
               className="flex items-center px-4 py-2 cursor-pointer hover:bg-gray-700">
-              {item.contributorAvatarUrl ? (
+              {item.contributorAvatarUrl && item.contributorName ? (
                 <img
                   src={item.contributorAvatarUrl}
                   alt={item.contributorName}

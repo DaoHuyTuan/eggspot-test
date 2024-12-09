@@ -32,7 +32,7 @@ export const SongList = (props: Props) => {
           </tr>
         </thead>
         <tbody>
-          {props.songs.map((song, index) => (
+          {props.songs.map(song => (
             <tr
               key={song.id}
               className={`

@@ -1,176 +1,4 @@
-export type ContributorRole =
-  | 'MainArtist'
-  | 'FeaturedArtist'
-  | 'Composer'
-  | 'Lyricist'
-  | 'MusicPublisher'
-  | 'Producer'
-  | 'Mixer'
-  | 'Remixer'
-  | string
-
-export type Contributor = {
-  contributorId: number
-  contributorName?: string | null
-  contributorAlias?: string | null
-  contributorAvatarUrl?: string | null
-  contributorRole: ContributorRole
-}
-
-export const mockContributors: Contributor[] = [
-  {
-    contributorId: 1,
-    contributorName: 'John Doe',
-    contributorAlias: 'JD',
-    contributorAvatarUrl: 'https://via.placeholder.com/150',
-    contributorRole: 'MainArtist'
-  },
-  {
-    contributorId: 2,
-    contributorName: 'Jane Smith',
-    contributorAlias: 'JS',
-    contributorAvatarUrl: 'https://via.placeholder.com/150',
-    contributorRole: 'MainArtist'
-  },
-  {
-    contributorId: 3,
-    contributorName: 'Mike Johnson',
-    contributorAlias: 'MJ',
-    contributorAvatarUrl: 'https://via.placeholder.com/150',
-    contributorRole: 'FeaturedArtist'
-  },
-  {
-    contributorId: 4,
-    contributorName: 'Emily Davis',
-    contributorAlias: 'ED',
-    contributorAvatarUrl: 'https://via.placeholder.com/150',
-    contributorRole: 'FeaturedArtist'
-  },
-  {
-    contributorId: 5,
-    contributorName: 'Chris Wilson',
-    contributorAlias: 'CW',
-    contributorAvatarUrl: 'https://via.placeholder.com/150',
-    contributorRole: 'Composer'
-  },
-  {
-    contributorId: 6,
-    contributorName: 'Sarah Brown',
-    contributorAlias: 'SB',
-    contributorAvatarUrl: 'https://via.placeholder.com/150',
-    contributorRole: 'Composer'
-  },
-  {
-    contributorId: 7,
-    contributorName: 'Robert Taylor',
-    contributorAlias: 'RT',
-    contributorAvatarUrl: 'https://via.placeholder.com/150',
-    contributorRole: 'Lyricist'
-  },
-  {
-    contributorId: 8,
-    contributorName: 'Laura Martin',
-    contributorAlias: 'LM',
-    contributorAvatarUrl: 'https://via.placeholder.com/150',
-    contributorRole: 'Lyricist'
-  },
-  {
-    contributorId: 9,
-    contributorName: 'William Anderson',
-    contributorAlias: 'WA',
-    contributorAvatarUrl: 'https://via.placeholder.com/150',
-    contributorRole: 'MusicPublisher'
-  },
-  {
-    contributorId: 10,
-    contributorName: 'Natalie Clark',
-    contributorAlias: 'NC',
-    contributorAvatarUrl: 'https://via.placeholder.com/150',
-    contributorRole: 'MusicPublisher'
-  },
-  {
-    contributorId: 11,
-    contributorName: 'Daniel Thomas',
-    contributorAlias: 'DT',
-    contributorAvatarUrl: 'https://via.placeholder.com/150',
-    contributorRole: 'Producer'
-  },
-  {
-    contributorId: 12,
-    contributorName: 'Sophia Moore',
-    contributorAlias: 'SM',
-    contributorAvatarUrl: 'https://via.placeholder.com/150',
-    contributorRole: 'Producer'
-  },
-  {
-    contributorId: 13,
-    contributorName: 'Anthony Harris',
-    contributorAlias: 'AH',
-    contributorAvatarUrl: 'https://via.placeholder.com/150',
-    contributorRole: 'Mixer'
-  },
-  {
-    contributorId: 14,
-    contributorName: 'Olivia Martin',
-    contributorAlias: 'OM',
-    contributorAvatarUrl: 'https://via.placeholder.com/150',
-    contributorRole: 'Mixer'
-  },
-  {
-    contributorId: 15,
-    contributorName: 'Henry White',
-    contributorAlias: 'HW',
-    contributorAvatarUrl: 'https://via.placeholder.com/150',
-    contributorRole: 'Remixer'
-  },
-  {
-    contributorId: 16,
-    contributorName: 'Amelia Hall',
-    contributorAlias: 'AH',
-    contributorAvatarUrl: 'https://via.placeholder.com/150',
-    contributorRole: 'Remixer'
-  }
-]
-
-type LowercaseContributorRole = Lowercase<ContributorRole>
-
-type ContributorsByRole = {
-  [K in LowercaseContributorRole]: Contributor[]
-}
-
-export const groupRoleContributor = (
-  contributors: Contributor[]
-): ContributorsByRole => {
-  return contributors.reduce((acc, contributor) => {
-    // Convert the role to lowercase and ensure it's typed correctly
-    const role =
-      contributor.contributorRole.toLowerCase() as LowercaseContributorRole
-
-    // Initialize the array if it doesn't exist
-    if (!acc[role]) {
-      acc[role] = []
-    }
-
-    // Add the contributor to the appropriate array
-    acc[role].push(contributor)
-
-    return acc
-  }, {} as ContributorsByRole)
-}
-
-export interface Song {
-  id: number
-  mainartist: string
-  featuredartist: string
-  composer: string
-  lyricist: string
-  musicpublisher: string
-  producer: string
-  mixer: string
-  remixer: string
-}
-
-export const mockSongs: Song[] = [
+export const mockSongs = [
   {
     id: 1,
     mainartist: 'JD',
@@ -2372,3 +2200,14 @@ export const mockSongs: Song[] = [
     remixer: 'HW'
   }
 ]
+
+function getSongDetails(songs: any) {
+  return songs.map(song => ({
+    name: `Song ${song.id}`, // Assuming name isn't directly available, using ID for now
+    type: song.type
+  }))
+}
+
+// Example usage
+const songDetails = getSongDetails(mockSongs)
+console.log(songDetails)

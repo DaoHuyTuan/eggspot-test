@@ -1,17 +1,17 @@
-import { useMemo, useState } from 'react'
+import { useState } from 'react'
 import { ContributorSearchField } from '../../components/ContributorSearchField'
 import {
   Contributor,
   ContributorRole,
   groupRoleContributor,
-  mockContributors,
-  mockSongs
+  mockContributors
 } from '../../utils/data'
 import { Tab } from '../../components/Tab'
-import { SongList } from '../../components/SongList'
+import { ContributorList } from '../../components/ContributorList'
 
 export const ContributorForm = () => {
   const [activeType, setActiveType] = useState<string>('instrumental')
+  const [parseData, setParseData] = useState(mockContributors)
   const {
     remixer,
     mainartist,
@@ -21,7 +21,8 @@ export const ContributorForm = () => {
     musicpublisher,
     producer,
     mixer
-  } = groupRoleContributor(mockContributors)
+  } = groupRoleContributor(parseData)
+  // @ts-ignore
   const [selectedContributors, setSelectedContributors] = useState<{
     [key in ContributorRole]: Contributor[]
   }>({
@@ -35,23 +36,6 @@ export const ContributorForm = () => {
     Remixer: []
   })
 
-  const filteredSongs = useMemo(() => {
-    return mockSongs.filter(song => {
-      for (const [role, contributors] of Object.entries(selectedContributors)) {
-        debugger
-        if (
-          contributors.length > 0 &&
-          !contributors.some(c => song[role.toLowerCase()] == c)
-        ) {
-          return false
-        }
-      }
-      return true
-    })
-  }, [selectedContributors, mockSongs])
-
-  console.log('filteredSongs', filteredSongs)
-  console.log('selectedContributors', selectedContributors)
   return (
     <div className="min-h-screen bg-[#1a1c1f] p-8">
       <div className="max-w-6xl mx-auto">
@@ -140,8 +124,11 @@ export const ContributorForm = () => {
           </button>
         </div>
       </div>
-      <div>
-        <SongList songs={filteredSongs} />
+      <div className="pt-[20px]">
+        <ContributorList
+          setParseData={setParseData}
+          data={parseData}
+        />
       </div>
     </div>
   )
