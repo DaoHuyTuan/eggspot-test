@@ -1,4 +1,10 @@
-import { Dispatch, SetStateAction, useCallback, useState } from 'react'
+import {
+  Dispatch,
+  SetStateAction,
+  useCallback,
+  useEffect,
+  useState
+} from 'react'
 import { Contributor } from '../../utils/data'
 
 interface Props {
@@ -40,6 +46,19 @@ export const ContributorList = (props: Props) => {
   const handleContributorCancel = () => {
     setEditingIndex(-1)
   }
+
+  const handleContributorDelete = useCallback(() => {
+    const newContributors = contributors.filter(
+      el => el.contributorId !== selectedItem?.contributorId
+    )
+    debugger
+    props.setParseData(newContributors)
+    setEditingIndex(-1)
+  }, [contributors, selectedItem])
+
+  useEffect(() => {
+    setContributors(props.data)
+  }, [props.data])
 
   return (
     <div className="bg-white rounded-xl shadow-lg p-6">
@@ -130,6 +149,11 @@ export const ContributorList = (props: Props) => {
                         onClick={handleContributorSave}
                         className="px-4 py-2 text-sm font-medium text-white bg-green-500 rounded-md hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2">
                         Save
+                      </button>
+                      <button
+                        onClick={handleContributorDelete}
+                        className="px-4 py-2 text-sm font-medium text-white bg-red-500 rounded-md hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2">
+                        Delete
                       </button>
                     </div>
                   ) : (
